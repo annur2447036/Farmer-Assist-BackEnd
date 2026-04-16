@@ -1,14 +1,14 @@
 package com.example.projectBackend.Controller;
 
 import com.example.projectBackend.DTO.ProductDTO;
+import com.example.projectBackend.Entity.Product;
 import com.example.projectBackend.Services.ProductServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/products")
@@ -19,8 +19,29 @@ public class ProductController {
     private ProductServices services;
 
     @PostMapping
-    public ResponseEntity<?>create(@RequestBody ProductDTO dto){
+    public ResponseEntity<?>create(@RequestBody ProductDTO dto) {
         return services.create(dto);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ProductDTO dto) {
+        return services.update(id, dto);
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        return services.delete(id);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Product>> all() {
+        return services.getAllProduct();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        return services.getById(id);
+    }
 }
+

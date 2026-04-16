@@ -19,6 +19,13 @@ public class Product {
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler","products"})
     private  Category category;
 
+    @ManyToOne
+    @JoinColumn(name="farmer_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer","handler","products"})
+    private Farmer farmer;
+
+
+
     private String product_name;
     private Double price;
 

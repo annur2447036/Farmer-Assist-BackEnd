@@ -1,6 +1,9 @@
 package com.example.projectBackend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "categories")
@@ -13,6 +16,11 @@ public class Category {
     private String name;
     @Column(columnDefinition = "LONGTEXT")
     private String imageurl;
+
+
+    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnore
+    private List<Product> products;
 
     // Default Constructor (Required)
     public Category() {
@@ -47,5 +55,13 @@ public class Category {
 
     public void setImageurl(String imageurl) {
         this.imageurl = imageurl;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 }

@@ -1,9 +1,11 @@
 package com.example.projectBackend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Farmer {
@@ -21,9 +23,14 @@ public class Farmer {
     private  String  password;
 
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "farmer",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonIgnore
+    private List<Product> products;
     public Farmer(){
         this.createdAt=LocalDateTime.now();
     }
+
 
     public Long getId() {
         return id;
@@ -81,6 +88,17 @@ public class Farmer {
         this.createdAt = createdAt;
     }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
 
     @Override
     public String toString() {
