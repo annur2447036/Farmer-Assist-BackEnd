@@ -5,12 +5,20 @@ import java.util.List;
 public class ProductDTO {
     private String name;
 
-    public Long getId() {
-        return id;
+    private Double price;
+    private Integer stock;
+    private Boolean available;
+    private Long categoryId;//Category Id
+    private List<String> imageurls;
+    private List<SpecificationDTO> specifications;
+    private  Long farmerId;
+
+    public Long getCategoryId() {
+        return categoryId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getName() {
@@ -61,10 +69,11 @@ public class ProductDTO {
         this.specifications = specifications;
     }
 
-    private Double price;
-    private Integer stock;
-    private Boolean available;
-    private Long id;//Category Id
-    private List<String> imageurls;
-    private List<SpecificationDTO> specifications;
+    public Long getFarmerId() {
+        return farmerId;
+    }
+
+    public void setFarmerId(Long farmerId) {
+        this.farmerId = farmerId;
+    }
 }

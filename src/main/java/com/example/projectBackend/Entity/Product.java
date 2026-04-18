@@ -12,14 +12,14 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="category_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler","products"})
     private  Category category;
 
-    @ManyToOne
+    @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="farmer_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler","products"})
     private Farmer farmer;
@@ -29,12 +29,30 @@ public class Product {
     private String product_name;
     private Double price;
 
+
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonManagedReference
+    private List<ProductImage> images =new ArrayList<>();
+
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonManagedReference
+    private List<ProductSpecification> specifications = new ArrayList<>();
+
+
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
+    }
+
+    public Farmer getFarmer() {
+        return farmer;
+    }
+
+    public void setFarmer(Farmer farmer) {
+        this.farmer = farmer;
     }
 
     public Category getCategory() {
@@ -106,13 +124,6 @@ public class Product {
     private LocalDateTime createdAt;
 
 
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
-    @JsonManagedReference
-    private List<ProductImage> images =new ArrayList<>();
-
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
-    @JsonManagedReference
-    private List<ProductSpecification> specifications = new ArrayList<>();
 
 
 }

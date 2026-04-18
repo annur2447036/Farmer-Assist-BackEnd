@@ -2,11 +2,9 @@ package com.example.projectBackend.Services;
 
 import com.example.projectBackend.DTO.ProductDTO;
 import com.example.projectBackend.DTO.SpecificationDTO;
-import com.example.projectBackend.Entity.Category;
-import com.example.projectBackend.Entity.Product;
-import com.example.projectBackend.Entity.ProductImage;
-import com.example.projectBackend.Entity.ProductSpecification;
+import com.example.projectBackend.Entity.*;
 import com.example.projectBackend.Repository.CategoryRepository;
+import com.example.projectBackend.Repository.FarmerRepository;
 import com.example.projectBackend.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +22,9 @@ public class ProductServices {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private FarmerRepository farmerRepository;
+
 
     public ResponseEntity<?> create(ProductDTO dto){
         Product product = new Product();
@@ -31,7 +32,17 @@ public class ProductServices {
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
         product.setAvailable(dto.getAvailable()!=null?dto.getAvailable():true);
-        Optional<Category> byIdCategory = categoryRepository.findById(dto.getId());
+
+        Optional<Farmer> byIdFarmer = farmerRepository.findById(dto.getFarmerId());
+        if(byIdFarmer.isPresent()){
+            Farmer farmer = byIdFarmer.get();
+            product.setFarmer(farmer);
+        }
+        else {
+            return new ResponseEntity<>("Farmer not found", HttpStatus.NOT_FOUND);
+        }
+
+        Optional<Category> byIdCategory = categoryRepository.findById(dto.getCategoryId());
         if(byIdCategory.isPresent()){
             Category category = byIdCategory.get();
             product.setCategory(category);
@@ -78,7 +89,9 @@ public class ProductServices {
             product.setStock(dto.getStock());
             product.setAvailable(dto.getAvailable()!=null?dto.getAvailable():true);
 
-            Optional<Category> byIdCategory = categoryRepository.findById(dto.getId());
+
+
+            Optional<Category> byIdCategory = categoryRepository.findById(dto.getCategoryId());
             if(byIdCategory.isPresent()){
                 Category category = byIdCategory.get();
                 product.setCategory(category);

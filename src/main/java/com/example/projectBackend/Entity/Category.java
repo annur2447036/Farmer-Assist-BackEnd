@@ -33,9 +33,7 @@ public class Category {
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+
 
     public String getName() {
         return name;
@@ -45,8 +43,12 @@ public class Category {
         return imageurl;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getCid() {
+        return id;
+    }
+
+    public void setCid(Long cid) {
+        this.id = cid;
     }
 
     public void setName(String name) {
