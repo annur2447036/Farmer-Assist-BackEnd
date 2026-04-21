@@ -107,7 +107,8 @@ public class ProductServices {
                 boolean isPrimary=true;
                 for(String imgUrl:dto.getImageurls()){
                     ProductImage img = new ProductImage();
-                    img.setImageUrl(img.getImageUrl());
+//                    img.setImageUrl(img.getImageUrl());
+                    img.setImageUrl(imgUrl);   // ✅ MUST be this
                     img.setProduct(product);
                     img.setPrimary(isPrimary);
                     isPrimary=false;
@@ -155,5 +156,10 @@ public class ProductServices {
             return new ResponseEntity<>(product,HttpStatus.OK);
         }
         return new ResponseEntity<>("Product not found",HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<List<Product>>getByFarmerId(Long id){
+        List<Product>byFarmerId= repo.findByFarmer_Id(id);
+        return  ResponseEntity.ok(byFarmerId);
     }
 }

@@ -43,12 +43,12 @@ public class Category {
         return imageurl;
     }
 
-    public Long getCid() {
+    public Long getId() {
         return id;
     }
 
-    public void setCid(Long cid) {
-        this.id = cid;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setName(String name) {

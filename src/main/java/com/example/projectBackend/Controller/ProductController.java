@@ -20,14 +20,26 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<?>create(@RequestBody ProductDTO dto) {
-
+        System.out.println("Received Product: " + dto);
+        System.out.print(dto);
         return services.create(dto);
     }
+
+
+//
+//    @PostMapping
+//    public ResponseEntity<?>create(@RequestBody ProductDTO dto) {
+//        System.out.println("Received Product: " + dto);
+//        return services.create(dto);
+//    }
+
+
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ProductDTO dto) {
         return services.update(id, dto);
     }
+
 
 
     @DeleteMapping("/{id}")
@@ -43,6 +55,12 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         return services.getById(id);
+    }
+
+
+    @GetMapping("/farmer/{id}")
+    public ResponseEntity<?>getByFarmerId(@PathVariable long id){
+        return services.getByFarmerId(id);
     }
 }
 
