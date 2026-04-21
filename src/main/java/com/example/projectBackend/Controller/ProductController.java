@@ -40,8 +40,6 @@ public class ProductController {
         return services.update(id, dto);
     }
 
-
-
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         return services.delete(id);
@@ -61,6 +59,7 @@ public class ProductController {
     @GetMapping("/farmer/{id}")
     public ResponseEntity<?>getByFarmerId(@PathVariable long id){
         return services.getByFarmerId(id);
+
     }
 }
 
