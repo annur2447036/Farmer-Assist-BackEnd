@@ -57,9 +57,16 @@ public class ProductController {
 
 
     @GetMapping("/farmer/{id}")
-    public ResponseEntity<?>getByFarmerId(@PathVariable long id){
+    public ResponseEntity<?>getByFarmerId(@PathVariable Long id) {
         return services.getByFarmerId(id);
 
+
     }
-}
+        @GetMapping("/categories/{id}")
+        public ResponseEntity<?>getByCat_id(@PathVariable Long id){
+            return  services.getByCat_Id(id);
+        }
+
+    }
+
 

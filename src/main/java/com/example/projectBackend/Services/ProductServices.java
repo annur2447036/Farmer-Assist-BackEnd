@@ -163,4 +163,8 @@ public class ProductServices {
         return  ResponseEntity.ok(byFarmerId);
 
     }
+    public ResponseEntity<List<Product>>getByCat_Id(Long id){
+        List<Product>byCatId=repo.findByCategory_Id(id);
+        return  ResponseEntity.ok(byCatId);
+    }
 }

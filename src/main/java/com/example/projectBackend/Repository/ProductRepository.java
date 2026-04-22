@@ -11,5 +11,7 @@ public interface ProductRepository extends JpaRepository<Product ,Long> {
 
   List<Product> findByFarmer_Id(Long id);
 
+  List<Product> findByCategory_Id(Long id);
+
 
 }
