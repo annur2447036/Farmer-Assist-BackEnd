@@ -26,6 +26,7 @@ public class Product {
 
     private String product_name;
     private Double price;
+
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonManagedReference
     private List<ProductImage> images =new ArrayList<>();
