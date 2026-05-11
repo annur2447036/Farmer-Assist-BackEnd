@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/orders")
@@ -33,4 +36,40 @@ public class OrderController {
         Order order = orderService.cancleOrder(orderId);
         return ResponseEntity.ok(order);
     }
+
+
+    @GetMapping
+    public ResponseEntity<List<Order>> getAll(){
+        List<Order> allOrders = orderService.getAllOrders();
+        return ResponseEntity.ok(allOrders);
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<?> updateOrder(@PathVariable Long id,@RequestParam String status){
+        return orderService.updateStatus(id,status);
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<Map<String,Object>> getDashboard(){
+        Map<String, Object> dashboard = orderService.getDashboard();
+        return  ResponseEntity.ok(dashboard);
+    }
+
+    @GetMapping("/cities")
+    public ResponseEntity<List<String>> getAllCities(){
+        List<String> allCities = orderService.getAllCities();
+        return  ResponseEntity.ok(allCities);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Order>> filterOrders(
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(required = false) String city
+    ){
+        List<Order> filters = orderService.filters(from, to, city);
+        return ResponseEntity.ok(filters);
+    }
+
+
 }

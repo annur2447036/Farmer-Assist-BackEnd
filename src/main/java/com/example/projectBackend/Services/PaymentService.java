@@ -51,7 +51,7 @@ public class PaymentService {
 
         payment.setPaymentMethod(dto.getPaymentMethod());
         payment.setTransactionRef(dto.getTransactionRef());
-        payment.setStatus("SUCCESS");
+        payment.setStatus("PENDING");
         payment.setPaymentTime(LocalDateTime.now());
 
         payment.setNetAmount(dto.getNetAmount());
@@ -72,7 +72,7 @@ public class PaymentService {
         Payment payment =paymentRepository.findByOrder_Id(orderId).orElseThrow(() ->new RuntimeException("Payment not found"));
 
         if(payment.getNetAmount()==null){
-            throw new RuntimeException("netamount is missing");
+            throw new RuntimeException("net amount is missing");
         }
         double amount = payment.getNetAmount();
 

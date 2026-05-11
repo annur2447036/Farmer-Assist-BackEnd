@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.awt.geom.RectangularShape;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -132,6 +132,58 @@ public class OrderService {
         List<Order> byCustomerId = orderRepository.findByCustomer_Id(customerId);
         return ResponseEntity.ok(byCustomerId);
     }
+    public List<Order> getAllOrders(){
+        return orderRepository.findAll();
+    }
+
+    public ResponseEntity<?> updateStatus(Long id,String status){
+        Order order = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+        Payment payment = order.getPayment();
+        if(status.equalsIgnoreCase("Delivered")&& payment.getPaymentMethod().equalsIgnoreCase("COD")){
+            order.setStatus(status);
+            payment.setStatus("SUCCESS");
+            paymentRepository.save(payment);
+        }
+        order.setStatus(status);
+        Order save = orderRepository.save(order);
+        return ResponseEntity.ok(save);
+
+
+    }
+
+    public List<String> getAllCities(){
+        return orderRepository.findDistinctCities();
+    }
+
+    public List<Order> filters(String fromDate,String toDate,String city){
+        LocalDateTime from = null;
+        LocalDateTime  to = null;
+
+        if(fromDate != null && !fromDate.isBlank()){
+            from = LocalDate.parse(fromDate).atStartOfDay();
+        }
+
+        if(toDate != null && !toDate.isBlank()){
+            to = LocalDate.parse(toDate).atTime(23,59,59);
+        }
+
+        boolean hasDate = from !=null && to !=null;
+        boolean hasCity = city != null&& !city.isBlank();
+
+        if(hasDate && hasCity){
+            return  orderRepository.findByOrderDateBetweenAndShippingCityIgnoreCase(from,to,city);
+        }
+
+        if(hasDate){
+            return orderRepository.findByOrderDateBetween(from,to);
+        }
+        if(hasCity){
+            return orderRepository.findByShippingCityIgnoreCase(city);
+        }
+
+        return  orderRepository.findAll();
+    }
+
 
     @Transactional
     public Order cancleOrder(long id){
@@ -210,6 +262,70 @@ public class OrderService {
         order.setStatus("CANCELLED");
 
         return orderRepository.save(order);
+    }
+
+    public Map<String,Object>getDashboard(){
+        List<Order> orders =orderRepository.findAll();
+        List<Customer> customers=customerRepository.findAll();
+        List<Payment>payments=paymentRepository.findAll();
+
+        Map<String,Object> data=new HashMap<>();
+
+        data.put("totalOrders",orders.size());
+        data.put("totalCustomers",customers.size());
+
+        double revenue =payments.stream()
+                .filter(p->"SUCCESS".equals(p.getStatus()))
+                .mapToDouble(Payment::getNetAmount).sum();
+
+        data.put("totalRevenue",revenue);
+
+        long pendingOrders = orders.stream()
+                .filter(o->o.getStatus().equals("IN_PROCESS")).count();
+
+        data.put("inprocess",orders.stream()
+                .filter(o->o.getStatus().equals("IN_PROCESS")).count());
+
+
+        data.put("confirm",orders.stream()
+                .filter(o->o.getStatus().equals("CONFIRMED"))
+                .count());
+
+        data.put("dispatch",orders.stream()
+                .filter(o->o.getStatus().equals("DISPATCH"))
+                .count());
+
+
+
+        data.put("delivered",orders.stream()
+                .filter(o->o.getStatus().equals("DELIVERED"))
+                .count());
+
+
+        data.put("rejected",orders.stream()
+                .filter(o->o.getStatus().equals("REJECT"))
+                .count());
+
+        data.put("cancelled",orders.stream()
+                .filter(o->o.getStatus().equals("CANCELLED"))
+                .count());
+
+        data.put("paid",payments.stream()
+                .filter(p->p.getStatus().equals("SUCCESS"))
+                .count());
+
+        data.put("pendingPayments",payments.stream()
+                .filter(p->p.getStatus().equals("PENDING"))
+                .count());
+
+        data.put("refundPayments",payments.stream()
+                .filter(p->p.getStatus().equals("REFUNDED"))
+                .count());
+
+        return data;
+
+
+
     }
 }
 
