@@ -1,20 +1,20 @@
 package com.example.projectBackend.Services;
 
+import com.example.projectBackend.DTO.FarmerOrderDTO;
 import com.example.projectBackend.DTO.OrderItemDTO;
 import com.example.projectBackend.DTO.OrderRequestDTO;
 import com.example.projectBackend.Entity.*;
 import com.example.projectBackend.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.geom.RectangularShape;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -63,12 +63,15 @@ public class OrderService {
 
             OrderItem oi = new OrderItem();
             oi.setProductId(product.getId());
+            oi.setProduct(product);
             oi.setProductName(product.getProduct_name());
             oi.setQuantity(it.getQuantity());
             oi.setPrice(product.getPrice());
             oi.setTotal(product.getPrice() * it.getQuantity());
-            oi.setFarmerId(product.getFarmer().getId());
-            oi.setImageUrl(product.getImages().get(0).getImageUrl());
+            oi.setFarmerId(product.getFarmer() != null ? product.getFarmer().getId() : null);
+            if (product.getImages() != null && !product.getImages().isEmpty()) {
+                oi.setImageUrl(product.getImages().get(0).getImageUrl());
+            }
 
 
             orderItems.add(oi);
@@ -134,6 +137,50 @@ public class OrderService {
     }
     public List<Order> getAllOrders(){
         return orderRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Order> getOrdersByFarmer(Long farmerId) {
+        return orderRepository.findOrdersByFarmerId(farmerId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FarmerOrderDTO> getFarmerOrderDetails(Long farmerId) {
+        return orderRepository.findOrdersByFarmerId(farmerId)
+                .stream()
+                .flatMap(order -> order.getItems().stream()
+                        .filter(item -> isFarmerOrderItem(item, farmerId))
+                        .map(item -> toFarmerOrderDTO(order, item)))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isFarmerOrderItem(OrderItem item, Long farmerId) {
+        if (item.getProduct() != null && item.getProduct().getFarmer() != null) {
+            return farmerId.equals(item.getProduct().getFarmer().getId());
+        }
+        return farmerId.equals(item.getFarmerId());
+    }
+
+    private FarmerOrderDTO toFarmerOrderDTO(Order order, OrderItem item) {
+        Customer customer = order.getCustomer();
+        Payment payment = order.getPayment();
+
+        return new FarmerOrderDTO(
+                order.getId(),
+                order.getOrderDate(),
+                order.getStatus(),
+                payment != null ? payment.getStatus() : "PENDING",
+                customer != null ? customer.getId() : null,
+                customer != null ? customer.getName() : null,
+                customer != null ? customer.getEmail() : null,
+                customer != null ? customer.getContact() : null,
+                item.getProductId(),
+                item.getProductName(),
+                item.getImageUrl(),
+                item.getQuantity(),
+                item.getPrice(),
+                item.getTotal()
+        );
     }
 
     public ResponseEntity<?> updateStatus(Long id,String status){

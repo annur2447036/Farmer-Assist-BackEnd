@@ -5,20 +5,25 @@ import jakarta.persistence.*;
 @Entity
 public class OrderItem {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long productId;
+
     private String productName;
     private Integer quantity;
     private Double price;
     private Double total;
     private Long farmerId;
 
+    @Column(name = "product_id", insertable = false, updatable = false)
+    private Long productId;
+
     @Lob
     private String imageUrl;
 
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     public Long getId() {
         return id;
@@ -26,14 +31,6 @@ public class OrderItem {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
     }
 
     public String getProductName() {
@@ -76,11 +73,28 @@ public class OrderItem {
         this.farmerId = farmerId;
     }
 
+    public Long getProductId() {
+        return product != null ? product.getId() : productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+        this.productId = product != null ? product.getId() : null;
     }
 }

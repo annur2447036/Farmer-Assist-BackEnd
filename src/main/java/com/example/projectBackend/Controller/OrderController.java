@@ -71,5 +71,14 @@ public class OrderController {
         return ResponseEntity.ok(filters);
     }
 
+    @GetMapping("/farmer/{farmerId}")
+    public ResponseEntity<List<Order>> getOrdersByFarmer(
+            @PathVariable Long farmerId) {
+
+        List<Order> orders = orderService.getOrdersByFarmer(farmerId);
+
+        return ResponseEntity.ok(orders);
+    }
+
 
 }
